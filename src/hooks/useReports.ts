@@ -77,7 +77,6 @@ export const useReports = (userRole: 'admin' | 'sbu', userId?: string, filters?:
           raw_data,
           processed_data,
           calculated_score,
-          file_size,
           video_links,
           rejection_reason,
           created_at,
@@ -150,7 +149,7 @@ export const useReports = (userRole: 'admin' | 'sbu', userId?: string, filters?:
         rawData: report.raw_data,
         processedData: report.processed_data,
         calculatedScore: report.calculated_score,
-        fileSize: formatFileSize(report.file_size || 0),
+        fileSize: 'N/A', // File size not available in current schema
         videoLinks: report.video_links || [],
         rejectionReason: report.rejection_reason,
         filePath: report.file_path,
