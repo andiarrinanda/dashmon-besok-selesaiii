@@ -73,20 +73,19 @@ export const EXCEL_TEMPLATES: ExcelTemplate[] = [
     description: 'Template untuk laporan skoring publikasi media massa dengan berbagai jenis media',
     fileName: 'SKORING_PUBLIKASI_MEDIA.xlsx',
     columns: [
-      'Tanggal', 'Media Online', 'Media Cetak', 'Siaran TV', 
-      'Social Media', 'Radio', 'Running Text', 'Catatan'
+      'Link Media Sosial', 'Link Media Online', 'Monitoring Radio', 
+      'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV', 'Catatan'
     ],
-    requiredColumns: ['Tanggal'],
-    optionalColumns: ['Media Online', 'Media Cetak', 'Siaran TV', 'Social Media', 'Radio', 'Running Text', 'Catatan'],
+    requiredColumns: [],
+    optionalColumns: ['Link Media Sosial', 'Link Media Online', 'Monitoring Radio', 'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV', 'Catatan'],
     sampleData: [
       {
-        'Tanggal': '2024-01-15',
-        'Media Online': 'https://detik.com/news/example',
-        'Media Cetak': 'https://kompas.com/print/example',
-        'Siaran TV': 'https://tvone.com/news/example',
-        'Social Media': 'https://twitter.com/example',
-        'Radio': 'https://radio.com/news/example',
-        'Running Text': 'https://runningtext.com/example',
+        'Link Media Sosial': 'https://twitter.com/example',
+        'Link Media Online': 'https://detik.com/news/example',
+        'Monitoring Radio': 'https://radio.com/news/example',
+        'Monitoring Media cetak': 'https://kompas.com/print/example',
+        'Monitoring Running Text': 'https://runningtext.com/example',
+        'Monitoring Siaran TV': 'https://tvone.com/news/example',
         'Catatan': 'Coverage komprehensif'
       }
     ]
