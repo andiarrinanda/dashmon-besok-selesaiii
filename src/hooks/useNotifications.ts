@@ -12,30 +12,9 @@ export interface Notification {
   title: string;
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
-  category: 'upload' | 'approval' | 'rejection' | 'system' | 'kpi' | 'report' | 'deadline';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
   is_read: boolean;
-  action_url?: string;
-  action_text?: string;
-  metadata?: any;
   created_at: string;
-  read_at?: string;
-}
-
-export interface NotificationPreferences {
-  upload: boolean;
-  approval: boolean;
-  rejection: boolean;
-  system: boolean;
-  kpi: boolean;
-  report: boolean;
-  deadline: boolean;
-  priority_levels: {
-    low: boolean;
-    medium: boolean;
-    high: boolean;
-    urgent: boolean;
-  };
+  related_report_id?: string;
 }
 
 export const useNotifications = (userId?: string) => {
@@ -222,14 +201,14 @@ export const useNotifications = (userId?: string) => {
  */
 export const createNotification = async (
   userId: string,
-  notification: Omit<Notification, 'id' | 'user_id' | 'created_at' | 'is_read'>
+  notification: Omit<Notification, 'id' | 'user_id' | 'created_at' | 'is_read' | 'related_report_id'>
 ): Promise<Notification> => {
   const { data, error } = await supabase
     .from('notifications')
     .insert({
       user_id: userId,
       ...notification,
-      created_at: new Date().toISOString()
+      is_read: false
     })
     .select()
     .single();
@@ -242,16 +221,12 @@ export const createSystemNotification = async (
   userId: string,
   title: string,
   message: string,
-  type: Notification['type'] = 'info',
-  priority: Notification['priority'] = 'medium'
+  type: Notification['type'] = 'info'
 ): Promise<Notification> => {
   return createNotification(userId, {
     title,
     message,
-    type,
-    category: 'system',
-    priority,
-    is_read: false
+    type
   });
 };
 
@@ -266,10 +241,7 @@ export const createUploadNotification = async (
     message: isSuccess 
       ? `File "${fileName}" berhasil diupload dan sedang diproses`
       : `File "${fileName}" gagal diupload. Silakan coba lagi.`,
-    type: isSuccess ? 'success' : 'error',
-    category: 'upload',
-    priority: isSuccess ? 'medium' : 'high',
-    is_read: false
+    type: isSuccess ? 'success' : 'error'
   });
 };
 
@@ -285,10 +257,7 @@ export const createApprovalNotification = async (
     message: isApproved
       ? `Laporan "${fileName}" telah disetujui dan akan dilanjutkan ke proses kalkulasi skor`
       : `Laporan "${fileName}" ditolak. Alasan: ${reason || 'Tidak disebutkan'}`,
-    type: isApproved ? 'success' : 'error',
-    category: isApproved ? 'approval' : 'rejection',
-    priority: 'high',
-    is_read: false
+    type: isApproved ? 'success' : 'error'
   });
 };
 
@@ -320,74 +289,17 @@ export const createDeadlineNotification = async (
     (new Date(deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  let priority: Notification['priority'] = 'medium';
   let type: Notification['type'] = 'warning';
 
   if (daysUntilDeadline <= 1) {
-    priority = 'urgent';
     type = 'error';
   } else if (daysUntilDeadline <= 3) {
-    priority = 'high';
     type = 'warning';
   }
 
   return createNotification(userId, {
     title: `Deadline: ${taskName}`,
     message: `Deadline untuk "${taskName}" dalam ${daysUntilDeadline} hari (${new Date(deadline).toLocaleDateString('id-ID')})`,
-    type,
-    category: 'deadline',
-    priority,
-    is_read: false
+    type
   });
-};
-
-/**
- * Notification Preferences Hook
- */
-export const useNotificationPreferences = (userId?: string) => {
-  const [preferences, setPreferences] = useState<NotificationPreferences>({
-    upload: true,
-    approval: true,
-    rejection: true,
-    system: true,
-    kpi: true,
-    report: true,
-    deadline: true,
-    priority_levels: {
-      low: true,
-      medium: true,
-      high: true,
-      urgent: true
-    }
-  });
-
-  const updatePreferences = async (newPreferences: Partial<NotificationPreferences>) => {
-    try {
-      const updatedPreferences = { ...preferences, ...newPreferences };
-      setPreferences(updatedPreferences);
-      
-      // Save to localStorage for now (can be moved to database later)
-      localStorage.setItem(`notification_preferences_${userId}`, JSON.stringify(updatedPreferences));
-    } catch (err) {
-      console.error('Error updating notification preferences:', err);
-    }
-  };
-
-  useEffect(() => {
-    if (userId) {
-      const saved = localStorage.getItem(`notification_preferences_${userId}`);
-      if (saved) {
-        try {
-          setPreferences(JSON.parse(saved));
-        } catch (err) {
-          console.error('Error parsing saved preferences:', err);
-        }
-      }
-    }
-  }, [userId]);
-
-  return {
-    preferences,
-    updatePreferences
-  };
 };
