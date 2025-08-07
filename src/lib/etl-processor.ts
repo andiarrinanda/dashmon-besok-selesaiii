@@ -134,8 +134,25 @@ class ETLProcessor {
 
   // Process different media types from Excel data
   private static async processMediaType(data: any[], mediaType: string, columnName: string): Promise<MediaItem[]> {
+    // Find the actual column name in the data (flexible matching)
+    const firstRow = data[0] || {};
+    const availableColumns = Object.keys(firstRow);
+    
+    const actualColumnName = availableColumns.find(col => 
+      col.toLowerCase().includes(columnName.toLowerCase()) ||
+      columnName.toLowerCase().includes(col.toLowerCase()) ||
+      col === columnName
+    );
+    
+    if (!actualColumnName) {
+      console.log(`Column "${columnName}" not found. Available columns:`, availableColumns);
+      return [];
+    }
+    
+    console.log(`Processing ${mediaType} using column: ${actualColumnName}`);
+    
     const urls = data
-      .map(row => row[columnName])
+      .map(row => row[actualColumnName])
       .filter(url => url && typeof url === 'string' && url.trim() !== '');
 
     if (urls.length === 0) return [];

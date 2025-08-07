@@ -167,21 +167,72 @@ export const validateExcelData = (data: any[], template: ExcelTemplate): { isVal
     return { isValid: false, errors };
   }
 
-  // Check required columns
+  // Check required columns - be more flexible with column names
   const firstRow = data[0];
-  const missingColumns = template.requiredColumns.filter(col => !(col in firstRow));
+  const availableColumns = Object.keys(firstRow);
+  console.log('Available columns in Excel:', availableColumns);
+  console.log('Required columns:', template.requiredColumns);
   
-  if (missingColumns.length > 0) {
-    errors.push(`Kolom yang diperlukan tidak ditemukan: ${missingColumns.join(', ')}`);
-  }
-
-  // Check data types and formats
-  data.forEach((row, index) => {
-    template.requiredColumns.forEach(col => {
-      if (!row[col] || row[col].toString().trim() === '') {
-        errors.push(`Baris ${index + 1}: Kolom '${col}' tidak boleh kosong`);
-      }
+  // For SKORING_PUBLIKASI_MEDIA, check if we have at least some media columns
+  if (template.code === 'SKORING_PUBLIKASI_MEDIA') {
+    const mediaColumns = [
+      'Link Media Sosial', 'Link Media Online', 'Monitoring Radio',
+      'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV'
+    ];
+    
+    // Check for flexible column matching
+    const foundMediaColumns = mediaColumns.filter(col => {
+      return availableColumns.some(availableCol => 
+        availableCol.toLowerCase().includes(col.toLowerCase()) ||
+        col.toLowerCase().includes(availableCol.toLowerCase()) ||
+        availableCol === col
+      );
     });
+    
+    if (foundMediaColumns.length === 0) {
+      errors.push(`Tidak ditemukan kolom media yang valid. Kolom yang diharapkan: ${mediaColumns.join(', ')}`);
+      errors.push(`Kolom yang tersedia: ${availableColumns.join(', ')}`);
+    }
+  } else {
+    // For other templates, use exact matching
+    const missingColumns = template.requiredColumns.filter(col => !(col in firstRow));
+    
+    if (missingColumns.length > 0) {
+      errors.push(`Kolom yang diperlukan tidak ditemukan: ${missingColumns.join(', ')}`);
+      errors.push(`Kolom yang tersedia: ${availableColumns.join(', ')}`);
+    }
+  }
+  
+
+  // Check data types and formats - only for non-empty required columns
+  data.forEach((row, index) => {
+    if (template.code === 'SKORING_PUBLIKASI_MEDIA') {
+      // For media scoring, check if at least one media link exists per row
+      const mediaColumns = [
+        'Link Media Sosial', 'Link Media Online', 'Monitoring Radio',
+        'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV'
+      ];
+      
+      const hasAnyMediaLink = mediaColumns.some(col => {
+        const matchingCol = Object.keys(row).find(availableCol => 
+          availableCol.toLowerCase().includes(col.toLowerCase()) ||
+          col.toLowerCase().includes(availableCol.toLowerCase()) ||
+          availableCol === col
+        );
+        return matchingCol && row[matchingCol] && row[matchingCol].toString().trim() !== '';
+      });
+      
+      if (!hasAnyMediaLink && index > 0) { // Skip header row
+        errors.push(`Baris ${index + 1}: Minimal harus ada satu link media yang valid`);
+      }
+    } else {
+      // For other templates, check required columns
+      template.requiredColumns.forEach(col => {
+        if (!row[col] || row[col].toString().trim() === '') {
+          errors.push(`Baris ${index + 1}: Kolom '${col}' tidak boleh kosong`);
+        }
+      });
+    }
   });
 
   return {

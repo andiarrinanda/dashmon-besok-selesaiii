@@ -208,8 +208,36 @@ const UploadInterface = () => {
 
       console.log('📋 Excel data loaded:', {
         rows: excelData.length,
-        columns: Object.keys(excelData[0] || {})
+        columns: Object.keys(excelData[0] || {}),
+        firstRowSample: excelData[0]
       });
+      
+      // Additional validation for SKORING_PUBLIKASI_MEDIA
+      if (selectedIndicator === 'SKORING_PUBLIKASI_MEDIA') {
+        const firstRow = excelData[0] || {};
+        const availableColumns = Object.keys(firstRow);
+        console.log('Available columns for media scoring:', availableColumns);
+        
+        // Check if we have at least some media columns
+        const expectedMediaColumns = [
+          'Link Media Sosial', 'Link Media Online', 'Monitoring Radio',
+          'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV'
+        ];
+        
+        const foundColumns = expectedMediaColumns.filter(expectedCol => 
+          availableColumns.some(availableCol => 
+            availableCol.toLowerCase().includes(expectedCol.toLowerCase()) ||
+            expectedCol.toLowerCase().includes(availableCol.toLowerCase()) ||
+            availableCol === expectedCol
+          )
+        );
+        
+        if (foundColumns.length === 0) {
+          throw new Error(`Format Excel tidak sesuai untuk Skoring Publikasi Media. Kolom yang diharapkan: ${expectedMediaColumns.join(', ')}. Kolom yang ditemukan: ${availableColumns.join(', ')}`);
+        }
+        
+        console.log('✅ Found matching media columns:', foundColumns);
+      }
 
       setProcessStatus("Menyimpan laporan...");
       setUploadProgress(50);
