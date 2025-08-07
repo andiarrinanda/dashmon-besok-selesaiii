@@ -177,8 +177,8 @@ class ETLProcessor {
 
       // Define media type mappings based on your Excel columns
       const mediaTypeConfigs = [
-        { type: 'online_news', column: 'Link Berita Media Online' },
         { type: 'social_media', column: 'Link Media Sosial' },
+        { type: 'online_news', column: 'Link Media Online' },
         { type: 'radio', column: 'Monitoring Radio' },
         { type: 'print_media', column: 'Monitoring Media cetak' },
         { type: 'running_text', column: 'Monitoring Running Text' },
