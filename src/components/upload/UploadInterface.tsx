@@ -32,16 +32,16 @@ const UploadInterface = () => {
     // Template structure based on the actual report format from image 2
     const templates: { [key: string]: any } = {
       'SKORING_PUBLIKASI_MEDIA': [
-        ['Link Berita Media Online', 'Link Media Sosial', 'Monitoring Radio', 'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV'],
-        ['https://pelayananpublik.id/2025/05/23/tingkatkan-layanan-internet-pln-icon-plus-sumbagut-komitmen-lakukan-perbaikan-dan-peningkatan-jaringan-fiber-optic/', 'https://www.instagram.com/p/DKSAWthwXZ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', 'https://drive.google.com/file/d/1PzHzxRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link', 'https://drive.google.com/file/d/1Qz4F5xRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link', 'https://drive.google.com/file/d/1Rz6G7xRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link', 'https://drive.google.com/file/d/1Sz8H9xRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link'],
-        ['https://indiespost.id/2025/06/23/promosi-produk-ke-masyarakat-iconnet-bareng-con-terjun-ke-salon-pelanggan-bagi-bagi-hadiah/', 'https://www.instagram.com/p/DKgSmSthqvA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', '', '', '', ''],
-        ['https://www.realitynews.id/2025/05/tingkatkan-layanan-internet-pln-icon.html', 'https://www.instagram.com/p/DKZJKuBRJ7/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', '', '', '', '']
+        ['Link Media Sosial', 'Link Media Online', 'Monitoring Radio', 'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV'],
+        ['https://www.instagram.com/p/DKSAWthwXZ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', 'https://pelayananpublik.id/2025/05/23/tingkatkan-layanan-internet-pln-icon-plus-sumbagut-komitmen-lakukan-perbaikan-dan-peningkatan-jaringan-fiber-optic/', 'https://drive.google.com/file/d/1PzHzxRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link', 'https://drive.google.com/file/d/1Qz4F5xRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link', 'https://drive.google.com/file/d/1Rz6G7xRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link', 'https://drive.google.com/file/d/1Sz8H9xRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link'],
+        ['https://www.instagram.com/p/DKgSmSthqvA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', 'https://indiespost.id/2025/06/23/promosi-produk-ke-masyarakat-iconnet-bareng-con-terjun-ke-salon-pelanggan-bagi-bagi-hadiah/', '', '', '', ''],
+        ['https://www.instagram.com/p/DKZJKuBRJ7/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', 'https://www.realitynews.id/2025/05/tingkatkan-layanan-internet-pln-icon.html', '', '', '', '']
       ],
       'default': [
-        ['Link Berita Media Online', 'Link Media Sosial', 'Monitoring Radio', 'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV'],
-        ['https://example.com/news1', 'https://instagram.com/p/example1', 'https://drive.google.com/file/d/audio1', 'https://drive.google.com/file/d/print1', 'https://drive.google.com/file/d/runtext1', 'https://drive.google.com/file/d/tv1'],
-        ['https://example.com/news2', 'https://instagram.com/p/example2', '', '', '', ''],
-        ['https://example.com/news3', 'https://instagram.com/p/example3', '', '', '', '']
+        ['Link Media Sosial', 'Link Media Online', 'Monitoring Radio', 'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV'],
+        ['https://instagram.com/p/example1', 'https://example.com/news1', 'https://drive.google.com/file/d/audio1', 'https://drive.google.com/file/d/print1', 'https://drive.google.com/file/d/runtext1', 'https://drive.google.com/file/d/tv1'],
+        ['https://instagram.com/p/example2', 'https://example.com/news2', '', '', '', ''],
+        ['https://instagram.com/p/example3', 'https://example.com/news3', '', '', '', '']
       ]
     };
 

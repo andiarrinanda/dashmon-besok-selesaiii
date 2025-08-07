@@ -76,17 +76,26 @@ export const EXCEL_TEMPLATES: ExcelTemplate[] = [
       'Link Media Sosial', 'Link Media Online', 'Monitoring Radio', 
       'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV', 'Catatan'
     ],
-    requiredColumns: [],
-    optionalColumns: ['Link Media Sosial', 'Link Media Online', 'Monitoring Radio', 'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV', 'Catatan'],
+    requiredColumns: ['Link Media Sosial', 'Link Media Online'],
+    optionalColumns: ['Monitoring Radio', 'Monitoring Media cetak', 'Monitoring Running Text', 'Monitoring Siaran TV', 'Catatan'],
     sampleData: [
       {
-        'Link Media Sosial': 'https://twitter.com/example',
-        'Link Media Online': 'https://detik.com/news/example',
-        'Monitoring Radio': 'https://radio.com/news/example',
-        'Monitoring Media cetak': 'https://kompas.com/print/example',
-        'Monitoring Running Text': 'https://runningtext.com/example',
-        'Monitoring Siaran TV': 'https://tvone.com/news/example',
+        'Link Media Sosial': 'https://www.instagram.com/p/DKSAWthwXZ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
+        'Link Media Online': 'https://pelayananpublik.id/2025/05/23/tingkatkan-layanan-internet-pln-icon-plus-sumbagut-komitmen-lakukan-perbaikan-dan-peningkatan-jaringan-fiber-optic/',
+        'Monitoring Radio': 'https://drive.google.com/file/d/1PzHzxRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link',
+        'Monitoring Media cetak': 'https://drive.google.com/file/d/1Qz4F5xRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link',
+        'Monitoring Running Text': 'https://drive.google.com/file/d/1Rz6G7xRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link',
+        'Monitoring Siaran TV': 'https://drive.google.com/file/d/1Sz8H9xRbcUlR2Y67AkgRcnguJutmtZMar/view?usp=drive_link',
         'Catatan': 'Coverage komprehensif'
+      },
+      {
+        'Link Media Sosial': 'https://www.instagram.com/p/DKgSmSthqvA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
+        'Link Media Online': 'https://indiespost.id/2025/06/23/promosi-produk-ke-masyarakat-iconnet-bareng-con-terjun-ke-salon-pelanggan-bagi-bagi-hadiah/',
+        'Monitoring Radio': '',
+        'Monitoring Media cetak': '',
+        'Monitoring Running Text': '',
+        'Monitoring Siaran TV': '',
+        'Catatan': 'Media sosial dan online'
       }
     ]
   },

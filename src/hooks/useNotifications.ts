@@ -12,9 +12,30 @@ export interface Notification {
   title: string;
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
+  category?: 'upload' | 'approval' | 'rejection' | 'kpi' | 'report' | 'deadline' | 'system';
+  priority?: 'urgent' | 'high' | 'medium' | 'low';
   is_read: boolean;
   created_at: string;
+  read_at?: string;
+  action_url?: string;
+  action_text?: string;
   related_report_id?: string;
+}
+
+export interface NotificationPreferences {
+  upload: boolean;
+  approval: boolean;
+  rejection: boolean;
+  kpi: boolean;
+  report: boolean;
+  deadline: boolean;
+  system: boolean;
+  priority_levels: {
+    urgent: boolean;
+    high: boolean;
+    medium: boolean;
+    low: boolean;
+  };
 }
 
 export const useNotifications = (userId?: string) => {
@@ -39,8 +60,18 @@ export const useNotifications = (userId?: string) => {
 
       if (fetchError) throw fetchError;
 
-      setNotifications(data || []);
-      setUnreadCount(data?.filter(n => !n.is_read).length || 0);
+      // Map the database data to include default values for missing fields
+      const mappedNotifications = (data || []).map(notification => ({
+        ...notification,
+        category: notification.category || 'system',
+        priority: notification.priority || 'medium',
+        read_at: notification.read_at || undefined,
+        action_url: notification.action_url || undefined,
+        action_text: notification.action_text || undefined
+      }));
+
+      setNotifications(mappedNotifications);
+      setUnreadCount(mappedNotifications.filter(n => !n.is_read).length);
     } catch (err) {
       console.error('Error fetching notifications:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch notifications');
@@ -54,8 +85,7 @@ export const useNotifications = (userId?: string) => {
       const { error } = await supabase
         .from('notifications')
         .update({ 
-          is_read: true, 
-          read_at: new Date().toISOString() 
+          is_read: true
         })
         .eq('id', notificationId);
 
@@ -82,8 +112,7 @@ export const useNotifications = (userId?: string) => {
       const { error } = await supabase
         .from('notifications')
         .update({ 
-          is_read: true, 
-          read_at: new Date().toISOString() 
+          is_read: true
         })
         .eq('user_id', userId)
         .eq('is_read', false);
@@ -201,20 +230,34 @@ export const useNotifications = (userId?: string) => {
  */
 export const createNotification = async (
   userId: string,
-  notification: Omit<Notification, 'id' | 'user_id' | 'created_at' | 'is_read' | 'related_report_id'>
+  notification: Pick<Notification, 'title' | 'message' | 'type'> & {
+    related_report_id?: string;
+  }
 ): Promise<Notification> => {
   const { data, error } = await supabase
     .from('notifications')
     .insert({
       user_id: userId,
-      ...notification,
+      title: notification.title,
+      message: notification.message,
+      type: notification.type,
+      related_report_id: notification.related_report_id,
       is_read: false
     })
     .select()
     .single();
 
   if (error) throw error;
-  return data;
+  
+  // Return with default values for fields not in database
+  return {
+    ...data,
+    category: 'system' as const,
+    priority: 'medium' as const,
+    read_at: undefined,
+    action_url: undefined,
+    action_text: undefined
+  };
 };
 
 export const createSystemNotification = async (
@@ -273,10 +316,7 @@ export const createKPINotification = async (
   return createNotification(userId, {
     title: `Update KPI: ${kpiName}`,
     message: `Pencapaian KPI ${kpiName}: ${achievement}/${target} (${percentage}%)`,
-    type: isOnTrack ? 'success' : 'warning',
-    category: 'kpi',
-    priority: isOnTrack ? 'medium' : 'high',
-    is_read: false
+    type: isOnTrack ? 'success' : 'warning'
   });
 };
 
@@ -302,4 +342,88 @@ export const createDeadlineNotification = async (
     message: `Deadline untuk "${taskName}" dalam ${daysUntilDeadline} hari (${new Date(deadline).toLocaleDateString('id-ID')})`,
     type
   });
+};
+
+/**
+ * Notification Preferences Hook
+ * Manages user notification preferences for categories and priority levels
+ * Uses localStorage for persistence since database table is not available
+ */
+export const useNotificationPreferences = (userId?: string) => {
+  const [preferences, setPreferences] = useState<NotificationPreferences>({
+    upload: true,
+    approval: true,
+    rejection: true,
+    kpi: true,
+    report: true,
+    deadline: true,
+    system: true,
+    priority_levels: {
+      urgent: true,
+      high: true,
+      medium: true,
+      low: true,
+    }
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const getStorageKey = (userId: string) => `notification_preferences_${userId}`;
+
+  const fetchPreferences = async () => {
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Try to get preferences from localStorage
+      const storageKey = getStorageKey(userId);
+      const storedPreferences = localStorage.getItem(storageKey);
+      
+      if (storedPreferences) {
+        const parsedPreferences = JSON.parse(storedPreferences);
+        setPreferences(parsedPreferences);
+      }
+      // If no stored preferences, keep default values
+      
+    } catch (err) {
+      console.error('Error fetching notification preferences:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch preferences');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePreferences = async (newPreferences: Partial<NotificationPreferences>) => {
+    if (!userId) return;
+
+    try {
+      const updatedPreferences = { ...preferences, ...newPreferences };
+      
+      // Store in localStorage
+      const storageKey = getStorageKey(userId);
+      localStorage.setItem(storageKey, JSON.stringify(updatedPreferences));
+      
+      setPreferences(updatedPreferences);
+    } catch (err) {
+      console.error('Error updating notification preferences:', err);
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    fetchPreferences();
+  }, [userId]);
+
+  return {
+    preferences,
+    loading,
+    error,
+    updatePreferences,
+    refetch: fetchPreferences
+  };
 };
